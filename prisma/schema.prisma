@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cat_pekerjaan_ayah {
+  id              BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  nama            String            @db.VarChar(255)
+  created_at      DateTime?         @db.Timestamp(0)
+  updated_at      DateTime?         @db.Timestamp(0)
+  pd_biodata_lain pd_biodata_lain[]
+}
+
+model cat_pekerjaan_ibu {
+  id              BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  nama            String            @db.VarChar(255)
+  created_at      DateTime?         @db.Timestamp(0)
+  updated_at      DateTime?         @db.Timestamp(0)
+  pd_biodata_lain pd_biodata_lain[]
+}
+
+model cat_pend_terakhir {
+  id                                                             BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  nama                                                           String            @db.VarChar(255)
+  created_at                                                     DateTime?         @db.Timestamp(0)
+  updated_at                                                     DateTime?         @db.Timestamp(0)
+  pd_biodata_lain_pd_biodata_lain_pend_t_ayahTocat_pend_terakhir pd_biodata_lain[] @relation("pd_biodata_lain_pend_t_ayahTocat_pend_terakhir")
+  pd_biodata_lain_pd_biodata_lain_pend_t_ibuTocat_pend_terakhir  pd_biodata_lain[] @relation("pd_biodata_lain_pend_t_ibuTocat_pend_terakhir")
+}
+
+model cat_penghasilan {
+  id                                                          BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  nama                                                        String            @db.VarChar(255)
+  created_at                                                  DateTime?         @db.Timestamp(0)
+  updated_at                                                  DateTime?         @db.Timestamp(0)
+  pd_biodata_lain_pd_biodata_lain_pengh_ayahTocat_penghasilan pd_biodata_lain[] @relation("pd_biodata_lain_pengh_ayahTocat_penghasilan")
+  pd_biodata_lain_pd_biodata_lain_pengh_ibuTocat_penghasilan  pd_biodata_lain[] @relation("pd_biodata_lain_pengh_ibuTocat_penghasilan")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model file_pendaftar {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  kk           String?   @db.VarChar(255)
+  ijazah       String?   @db.VarChar(255)
+  skl          String?   @db.VarChar(255)
+  pasfoto      String?   @db.VarChar(255)
+  id_pendaftar BigInt    @db.UnsignedBigInt
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+  pd_users     pd_users  @relation(fields: [id_pendaftar], references: [id], onDelete: Cascade, map: "file_pendaftar_id_pendaftar_foreign")
+
+  @@index([id_pendaftar], map: "file_pendaftar_id_pendaftar_foreign")
+}
+
+model gelombang_pendaftaran {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  gelombang_ke    String    @db.VarChar(255)
+  isAktif         Int
+  tahun_pelajaran String    @db.VarChar(255)
+  periode_mulai   String    @db.VarChar(255)
+  periode_akhir   String    @db.VarChar(255)
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+}
+
+model jadwal_jalur_pendaftaran {
+  id                 BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  simulasi_mulai     DateTime          @db.Date
+  simulasi_akhir     DateTime          @db.Date
+  pendaftaran_mulai  DateTime          @db.Date
+  pendaftaran_akhir  DateTime          @db.Date
+  seleksi_awal       DateTime          @db.Date
+  seleksi_akhir      DateTime          @db.Date
+  daftar_ulang_awal  DateTime          @db.Date
+  daftar_ulang_akhir DateTime          @db.Date
+  pengumuman         DateTime          @db.Date
+  id_jalur           BigInt            @db.UnsignedBigInt
+  created_at         DateTime?         @db.Timestamp(0)
+  updated_at         DateTime?         @db.Timestamp(0)
+  jalur_pendaftaran  jalur_pendaftaran @relation(fields: [id_jalur], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "jadwal_jalur_pendaftaran_id_jalur_foreign")
+
+  @@index([id_jalur], map: "jadwal_jalur_pendaftaran_id_jalur_foreign")
+}
+
+model jalur_pendaftaran {
+  id                       BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
+  nama_jalur               String                     @db.VarChar(255)
+  kuota                    String                     @db.VarChar(255)
+  created_at               DateTime?                  @db.Timestamp(0)
+  updated_at               DateTime?                  @db.Timestamp(0)
+  jadwal_jalur_pendaftaran jadwal_jalur_pendaftaran[]
+}
+
+model menu_panel {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  nama_menu  String    @db.VarChar(255)
+  url        String    @db.VarChar(255)
+  user_role  BigInt    @db.UnsignedBigInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  users      users     @relation(fields: [user_role], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "menu_panel_user_role_foreign")
+
+  @@index([user_role], map: "menu_panel_user_role_foreign")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model pd_biodata_lain {
+  id                                                               BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  asal_sekolah                                                     String             @db.VarChar(255)
+  nisn                                                             String             @db.VarChar(255)
+  nm_bapak                                                         String             @db.VarChar(255)
+  nm_ibu                                                           String             @db.VarChar(255)
+  pkj_ayah                                                         BigInt             @db.UnsignedBigInt
+  pkj_ibu                                                          BigInt             @db.UnsignedBigInt
+  pengh_ayah                                                       BigInt             @db.UnsignedBigInt
+  pengh_ibu                                                        BigInt             @db.UnsignedBigInt
+  pend_t_ayah                                                      BigInt             @db.UnsignedBigInt
+  pend_t_ibu                                                       BigInt             @db.UnsignedBigInt
+  id_pendaftar                                                     BigInt             @db.UnsignedBigInt
+  created_at                                                       DateTime?          @db.Timestamp(0)
+  updated_at                                                       DateTime?          @db.Timestamp(0)
+  pd_users                                                         pd_users           @relation(fields: [id_pendaftar], references: [id], onDelete: Cascade, map: "pd_biodata_lain_id_pendaftar_foreign")
+  cat_pend_terakhir_pd_biodata_lain_pend_t_ayahTocat_pend_terakhir cat_pend_terakhir  @relation("pd_biodata_lain_pend_t_ayahTocat_pend_terakhir", fields: [pend_t_ayah], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pend_t_ayah_foreign")
+  cat_pend_terakhir_pd_biodata_lain_pend_t_ibuTocat_pend_terakhir  cat_pend_terakhir  @relation("pd_biodata_lain_pend_t_ibuTocat_pend_terakhir", fields: [pend_t_ibu], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pend_t_ibu_foreign")
+  cat_penghasilan_pd_biodata_lain_pengh_ayahTocat_penghasilan      cat_penghasilan    @relation("pd_biodata_lain_pengh_ayahTocat_penghasilan", fields: [pengh_ayah], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pengh_ayah_foreign")
+  cat_penghasilan_pd_biodata_lain_pengh_ibuTocat_penghasilan       cat_penghasilan    @relation("pd_biodata_lain_pengh_ibuTocat_penghasilan", fields: [pengh_ibu], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pengh_ibu_foreign")
+  cat_pekerjaan_ayah                                               cat_pekerjaan_ayah @relation(fields: [pkj_ayah], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pkj_ayah_foreign")
+  cat_pekerjaan_ibu                                                cat_pekerjaan_ibu  @relation(fields: [pkj_ibu], references: [id], onDelete: Cascade, map: "pd_biodata_lain_pkj_ibu_foreign")
+
+  @@index([id_pendaftar], map: "pd_biodata_lain_id_pendaftar_foreign")
+  @@index([pend_t_ayah], map: "pd_biodata_lain_pend_t_ayah_foreign")
+  @@index([pend_t_ibu], map: "pd_biodata_lain_pend_t_ibu_foreign")
+  @@index([pengh_ayah], map: "pd_biodata_lain_pengh_ayah_foreign")
+  @@index([pengh_ibu], map: "pd_biodata_lain_pengh_ibu_foreign")
+  @@index([pkj_ayah], map: "pd_biodata_lain_pkj_ayah_foreign")
+  @@index([pkj_ibu], map: "pd_biodata_lain_pkj_ibu_foreign")
+}
+
+model pd_biodata_umum {
+  id              BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  nama_lengkap    String             @db.VarChar(255)
+  nik             String             @db.VarChar(255)
+  jk              pd_biodata_umum_jk @default(Laki___laki)
+  tmpt_lahir      String             @db.VarChar(255)
+  tgl_lahir       DateTime           @db.Date
+  agama           String             @db.VarChar(255)
+  kewarganegaraan String             @db.VarChar(255)
+  addr_prov       String             @db.VarChar(255)
+  addr_kab        String             @db.VarChar(255)
+  addr_kec        String             @db.VarChar(255)
+  addr_des        String             @db.VarChar(255)
+  addr_rt         String             @db.VarChar(255)
+  addr_rw         String             @db.VarChar(255)
+  id_pendaftar    BigInt             @db.UnsignedBigInt
+  created_at      DateTime?          @db.Timestamp(0)
+  updated_at      DateTime?          @db.Timestamp(0)
+  pd_users        pd_users           @relation(fields: [id_pendaftar], references: [id], onDelete: Cascade, map: "pd_biodata_umum_id_pendaftar_foreign")
+
+  @@index([id_pendaftar], map: "pd_biodata_umum_id_pendaftar_foreign")
+}
+
+model pd_users {
+  id                       BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
+  nama_lengkap             String                     @db.VarChar(255)
+  email                    String                     @db.VarChar(255)
+  tgl_lahir                String                     @db.VarChar(255)
+  status                   Int
+  tgl_daftar               DateTime                   @db.Date
+  tgl_diterima             DateTime?                  @db.Date
+  gelombang                String                     @db.VarChar(255)
+  jalur_pendaftaran        String                     @db.VarChar(255)
+  password                 String                     @db.VarChar(255)
+  created_at               DateTime?                  @db.Timestamp(0)
+  updated_at               DateTime?                  @db.Timestamp(0)
+  file_pendaftar           file_pendaftar[]
+  pd_biodata_lain          pd_biodata_lain[]
+  pd_biodata_umum          pd_biodata_umum[]
+  tahapan_proses_pendaftar tahapan_proses_pendaftar[]
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model posts {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tgl        DateTime  @db.Date
+  judul      String    @db.VarChar(255)
+  isi        String    @db.Text
+  lampiran   String    @db.VarChar(255)
+  author     BigInt    @db.UnsignedBigInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  users      users     @relation(fields: [author], references: [id], onDelete: Cascade, map: "posts_author_foreign")
+
+  @@index([author], map: "posts_author_foreign")
+}
+
+model tahapan_proses {
+  id                       BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
+  proses                   String                     @db.VarChar(255)
+  created_at               DateTime?                  @db.Timestamp(0)
+  updated_at               DateTime?                  @db.Timestamp(0)
+  tahapan_proses_pendaftar tahapan_proses_pendaftar[]
+}
+
+model tahapan_proses_pendaftar {
+  id                BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id           BigInt         @db.UnsignedBigInt
+  id_tahapan_proses BigInt         @db.UnsignedBigInt
+  status            String         @db.VarChar(255)
+  created_at        DateTime?      @db.Timestamp(0)
+  updated_at        DateTime?      @db.Timestamp(0)
+  tahapan_proses    tahapan_proses @relation(fields: [id_tahapan_proses], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tahapan_proses_pendaftar_id_tahapan_proses_foreign")
+  pd_users          pd_users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tahapan_proses_pendaftar_user_id_foreign")
+
+  @@index([id_tahapan_proses], map: "tahapan_proses_pendaftar_id_tahapan_proses_foreign")
+  @@index([user_id], map: "tahapan_proses_pendaftar_user_id_foreign")
+}
+
+model tahun_ajaran {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tahun_ajaran String    @db.VarChar(255)
+  mulai        DateTime  @db.Date
+  akhir        DateTime? @db.Date
+  status       Int       @default(0)
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+}
+
+model users {
+  id             BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  nama           String       @db.VarChar(255)
+  username       String       @unique(map: "users_username_unique") @db.VarChar(255)
+  jabatan        String       @db.VarChar(255)
+  role           String       @db.VarChar(255)
+  password       String       @db.VarChar(255)
+  remember_token String?      @db.VarChar(100)
+  created_at     DateTime?    @db.Timestamp(0)
+  updated_at     DateTime?    @db.Timestamp(0)
+  menu_panel     menu_panel[]
+  posts          posts[]
+}
+
+enum pd_biodata_umum_jk {
+  Laki___laki @map("Laki - laki")
+  Perempuan
+}
